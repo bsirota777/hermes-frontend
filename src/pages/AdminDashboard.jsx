@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../api/client';
+import { useAuth } from '../auth/AuthContext';
 
 export default function AdminDashboard() {
     const [tab, setTab] = useState('users');
@@ -35,6 +36,7 @@ function usePagedData(endpoint) {
     const [data, setData] = useState(null);
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         setLoading(true);
@@ -42,15 +44,26 @@ function usePagedData(endpoint) {
             .get(endpoint, { params: { page, size: 10 } })
             .then((res) => setData(res.data))
             .finally(() => setLoading(false));
-    }, [endpoint, page]);
+    }, [endpoint, page, refreshKey]);
 
-    return { data, page, setPage, loading };
+    const refetch = () => setRefreshKey((k) => k + 1);
+
+    return { data, page, setPage, loading, refetch };
 }
 
 function UsersTab() {
-    const { data, page, setPage, loading } = usePagedData('/admin/users');
+    const { data, page, setPage, loading, refetch } = usePagedData('/admin/users');
+    const { email: currentUserEmail } = useAuth();
+
+    async function toggleBanned(user) {
+        await apiClient.patch(`/admin/users/${user.id}/ban`, { banned: !user.banned });
+        refetch();
+    }
 
     if (loading) return <p className="text-slate-500">Loading...</p>;
+    if (data.content.length === 0) {
+        return <div className="bg-white rounded-lg shadow-md p-8 text-center text-slate-500">No users yet.</div>;
+    }
 
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -60,7 +73,9 @@ function UsersTab() {
                     <th className="px-4 py-3">Name</th>
                     <th className="px-4 py-3">Email</th>
                     <th className="px-4 py-3">Role</th>
-                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Sends</th>
+                    <th className="px-4 py-3">Receives</th>
+                    <th className="px-4 py-3">Banned</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,11 +84,18 @@ function UsersTab() {
                         <td className="px-4 py-3">{u.name}</td>
                         <td className="px-4 py-3">{u.email}</td>
                         <td className="px-4 py-3">{u.role}</td>
+                        <td className="px-4 py-3">{u.sentCount}</td>
+                        <td className="px-4 py-3">{u.receivedCount}</td>
                         <td className="px-4 py-3">
-                            {u.banned ? (
-                                <span className="text-red-600 font-medium">Banned</span>
+                            {u.email === currentUserEmail ? (
+                                <span className="text-slate-400 text-xs italic">You</span>
                             ) : (
-                                <span className="text-green-600 font-medium">Active</span>
+                                <input
+                                    type="checkbox"
+                                    checked={u.banned}
+                                    onChange={() => toggleBanned(u)}
+                                    className="w-4 h-4 accent-red-600"
+                                />
                             )}
                         </td>
                     </tr>
@@ -89,6 +111,14 @@ function DeliveriesTab() {
     const { data, page, setPage, loading } = usePagedData('/admin/deliveries');
 
     if (loading) return <p className="text-slate-500">Loading...</p>;
+
+    if (data.content.length === 0) {
+        return (
+            <div className="bg-white rounded-lg shadow-md p-8 text-center text-slate-500">
+                No deliveries yet.
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
