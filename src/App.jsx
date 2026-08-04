@@ -5,15 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/AdminDashboard';
-
-// Placeholder — replace with real dashboards as you build them
-function Dashboard() {
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-100">
-            <h1 className="text-2xl font-bold text-slate-800">Dashboard (placeholder)</h1>
-        </div>
-    );
-}
+import Dashboard from './pages/Dashboard';
 
 function App() {
     return (
