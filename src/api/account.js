@@ -15,11 +15,11 @@ export async function getMyAccount() {
     return res.json();
 }
 
-export async function updateMyAddress(address) {
+export async function updateMyAddress(address, phoneNumber) {
     const res = await fetch(`${API_BASE}/users/me/address`, {
         method: 'PATCH',
         headers: authHeaders(),
-        body: JSON.stringify({ address }),
+        body: JSON.stringify({ address, phoneNumber }),
     });
     if (!res.ok) throw await parseError(res);
 }

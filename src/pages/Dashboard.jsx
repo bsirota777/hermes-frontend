@@ -7,7 +7,7 @@ import PasswordForm from '../components/PasswordForm';
 const TABS = ['Profile', 'Address', 'Password'];
 
 export default function Dashboard() {
-    console.log('Dashboard mounted');
+    //console.log('Dashboard mounted');
     const [account, setAccount] = useState(null);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('Profile');

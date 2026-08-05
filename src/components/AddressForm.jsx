@@ -1,16 +1,26 @@
-import { useState } from 'react';
-import { updateMyAddress } from '../api/account';
+import { useState, useEffect } from 'react';
+import { updateMyAddress, getMyAccount } from '../api/account';
 
 export default function AddressForm() {
     const [fields, setFields] = useState({
-        streetNumber: '',
-        streetName: '',
-        suburb: '',
-        state: '',
-        postcode: '',
+        streetNumber: '', streetName: '', suburb: '', state: '', postcode: '',
     });
-    const [status, setStatus] = useState('idle');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [status, setStatus] = useState('loading');
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        getMyAccount()
+            .then((account) => {
+                if (account.address) setFields(account.address);
+                if (account.phoneNumber) setPhoneNumber(account.phoneNumber);
+                setStatus('idle');
+            })
+            .catch((err) => {
+                setError(err.message);
+                setStatus('error');
+            });
+    }, []);
 
     function update(key, value) {
         setFields((f) => ({ ...f, [key]: value }));
@@ -21,7 +31,7 @@ export default function AddressForm() {
         setStatus('saving');
         setError(null);
         try {
-            await updateMyAddress(fields);
+            await updateMyAddress(fields, phoneNumber);
             setStatus('saved');
         } catch (err) {
             setError(err.message);
@@ -86,6 +96,17 @@ export default function AddressForm() {
                         className="w-full border rounded px-3 py-2 text-sm"
                     />
                 </div>
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone number</label>
+                <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                    className="w-full border rounded px-3 py-2 text-sm"
+                />
             </div>
 
             <button
