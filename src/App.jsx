@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/AdminDashboard';
 import Dashboard from './pages/Dashboard';
+import CreateDelivery from './components/CreateDelivery';
 
 function App() {
     return (
@@ -29,6 +30,11 @@ function App() {
                                 <AdminDashboard />
                             </AdminRoute>
                         }
+                    />
+                    <Route
+                        path="/deliveries/new"
+                        element={<ProtectedRoute><CreateDelivery />
+                                 </ProtectedRoute>}
                     />
                     <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>

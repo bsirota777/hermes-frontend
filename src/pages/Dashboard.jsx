@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { getMyAccount } from '../api/account';
 import AddressForm from '../components/AddressForm';
 import PasswordForm from '../components/PasswordForm';
+import { Link } from 'react-router-dom';
 
 const TABS = ['Profile', 'Address', 'Password'];
 
@@ -54,6 +55,15 @@ export default function Dashboard() {
 
             {activeTab === 'Address' && <AddressForm />}
             {activeTab === 'Password' && <PasswordForm />}
+
+            <div className="mt-8 pt-6 border-t">
+                <Link
+                    to="/deliveries/new"
+                    className="inline-block text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800"
+                >
+                    Create a delivery
+                </Link>
+            </div>
         </div>
     );
 }
