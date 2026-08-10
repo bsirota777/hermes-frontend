@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import CreateDelivery from './components/CreateDelivery';
 import DriverRegistration from './components/DriverRegistration';
 import DriverEdit from './components/DriverEdit';
+import DeliveryQueue from './components/DeliveryQueue';
 
 function App() {
     return (
@@ -46,6 +47,10 @@ function App() {
                     <Route
                         path="/driver-profile/edit"
                         element={<ProtectedRoute><DriverEdit /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/deliveries/queue"
+                        element={<ProtectedRoute><DeliveryQueue /></ProtectedRoute>}
                     />
                 </Routes>
             </AuthProvider>

@@ -79,6 +79,15 @@ export default function Dashboard() {
                         Register as a driver
                     </Link>
                 )}
+
+                {account.isDriver && (
+                    <Link
+                        to="/deliveries/queue"
+                        className="inline-block text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800"
+                    >
+                        Delivery queue
+                    </Link>
+                )}
             </div>
         </div>
     );
