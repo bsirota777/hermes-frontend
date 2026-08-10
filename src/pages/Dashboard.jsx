@@ -56,13 +56,29 @@ export default function Dashboard() {
             {activeTab === 'Address' && <AddressForm />}
             {activeTab === 'Password' && <PasswordForm />}
 
-            <div className="mt-8 pt-6 border-t">
+            <div className="mt-8 pt-6 border-t flex gap-3">
                 <Link
                     to="/deliveries/new"
                     className="inline-block text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800"
                 >
                     Create a delivery
                 </Link>
+
+                {account.isDriver ? (
+                    <Link
+                        to="/driver-profile/edit"
+                        className="inline-block text-sm font-medium border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50"
+                    >
+                        Change driver details
+                    </Link>
+                ) : (
+                    <Link
+                        to="/driver-registration"
+                        className="inline-block text-sm font-medium border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50"
+                    >
+                        Register as a driver
+                    </Link>
+                )}
             </div>
         </div>
     );

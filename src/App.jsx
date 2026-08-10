@@ -7,6 +7,8 @@ import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/AdminDashboard';
 import Dashboard from './pages/Dashboard';
 import CreateDelivery from './components/CreateDelivery';
+import DriverRegistration from './components/DriverRegistration';
+import DriverEdit from './components/DriverEdit';
 
 function App() {
     return (
@@ -37,6 +39,14 @@ function App() {
                                  </ProtectedRoute>}
                     />
                     <Route path="*" element={<Navigate to="/login" replace />} />
+                    <Route
+                        path="/driver-registration"
+                        element={<ProtectedRoute><DriverRegistration /></ProtectedRoute>}
+                    />
+                    <Route
+                        path="/driver-profile/edit"
+                        element={<ProtectedRoute><DriverEdit /></ProtectedRoute>}
+                    />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>
