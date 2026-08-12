@@ -173,7 +173,7 @@ export default function CreateDelivery() {
         setSubmitting(true);
 
         try {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("hermes_token");
             const res = await fetch(`${API_BASE_URL}/deliveries`, {
                 method: "POST",
                 headers: {
