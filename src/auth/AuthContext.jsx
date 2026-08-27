@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import apiClient from '../api/client';
+import { userApiClient as apiClient } from '../api/client';
 
 const AuthContext = createContext(null);
 

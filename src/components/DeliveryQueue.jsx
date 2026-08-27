@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_DELIVERY_SERVICE_URL || "http://localhost:8084";
 const PAGE_SIZE = 20;
 
 function formatDate(iso) {

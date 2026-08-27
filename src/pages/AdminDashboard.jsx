@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import apiClient from '../api/client';
+import { userApiClient, deliveryApiClient } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 
 export default function AdminDashboard() {
@@ -32,7 +32,7 @@ function TabButton({ active, onClick, children }) {
     );
 }
 
-function usePagedData(endpoint) {
+function usePagedData(client, endpoint) {
     const [data, setData] = useState(null);
     const [page, setPage] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -40,11 +40,11 @@ function usePagedData(endpoint) {
 
     useEffect(() => {
         setLoading(true);
-        apiClient
+        client
             .get(endpoint, { params: { page, size: 10 } })
             .then((res) => setData(res.data))
             .finally(() => setLoading(false));
-    }, [endpoint, page, refreshKey]);
+    }, [client, endpoint, page, refreshKey]);
 
     const refetch = () => setRefreshKey((k) => k + 1);
 
@@ -52,11 +52,11 @@ function usePagedData(endpoint) {
 }
 
 function UsersTab() {
-    const { data, page, setPage, loading, refetch } = usePagedData('/admin/users');
+    const { data, page, setPage, loading, refetch } = usePagedData(userApiClient, '/admin/users');
     const { email: currentUserEmail } = useAuth();
 
     async function toggleBanned(user) {
-        await apiClient.patch(`/admin/users/${user.id}/ban`, { banned: !user.banned });
+        await userApiClient.patch(`/admin/users/${user.id}/ban`, { banned: !user.banned });
         refetch();
     }
 
@@ -108,7 +108,7 @@ function UsersTab() {
 }
 
 function DeliveriesTab() {
-    const { data, page, setPage, loading } = usePagedData('/admin/deliveries');
+    const { data, page, setPage, loading } = usePagedData(deliveryApiClient, '/admin/deliveries');
 
     if (loading) return <p className="text-slate-500">Loading...</p>;
 
