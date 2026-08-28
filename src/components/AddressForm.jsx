@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { updateMyAddress, getMyAccount } from '../api/account';
+import { updateMyAddress, getMyAddress } from '../api/account';
 
 export default function AddressForm() {
     const [fields, setFields] = useState({
@@ -10,10 +10,10 @@ export default function AddressForm() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        getMyAccount()
-            .then((account) => {
-                if (account.address) setFields(account.address);
-                if (account.phoneNumber) setPhoneNumber(account.phoneNumber);
+        getMyAddress()
+            .then((result) => {
+                if (result?.address) setFields(result.address);
+                if (result?.phoneNumber) setPhoneNumber(result.phoneNumber);
                 setStatus('idle');
             })
             .catch((err) => {

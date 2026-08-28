@@ -15,6 +15,13 @@ export async function getMyAccount() {
     return res.json();
 }
 
+export async function getMyAddress() {
+    const res = await fetch(`${API_BASE}/users/me/address`, { headers: authHeaders() });
+    if (res.status === 404) return null; // no address saved yet - not an error
+    if (!res.ok) throw await parseError(res);
+    return res.json();
+}
+
 export async function updateMyAddress(address, phoneNumber) {
     const res = await fetch(`${API_BASE}/users/me/address`, {
         method: 'PATCH',
