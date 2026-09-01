@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { PageHeader } from "./Brand";
 
 const API_BASE_URL = import.meta.env.VITE_DELIVERY_SERVICE_URL || "http://localhost:8084";
 
@@ -28,7 +29,7 @@ function AddressFields({ label, value, onChange }) {
 
     return (
         <fieldset className="space-y-3">
-            <legend className="text-sm font-semibold text-slate-700">{label}</legend>
+            <legend className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>{label}</legend>
             <div className="grid grid-cols-2 gap-3">
                 <input
                     className="input col-span-1"
@@ -80,12 +81,13 @@ function ParcelRow({ parcel, onChange, onRemove, removable }) {
     };
 
     return (
-        <div className="rounded-lg border border-slate-200 p-4 space-y-3 relative">
+        <div className="card p-4 space-y-3 relative">
             {removable && (
                 <button
                     type="button"
                     onClick={onRemove}
-                    className="absolute top-3 right-3 text-slate-400 hover:text-red-600 text-sm"
+                    className="absolute top-3 right-3 text-sm font-medium"
+                    style={{ color: 'var(--ink-faint)' }}
                 >
                     Remove
                 </button>
@@ -105,8 +107,8 @@ function ParcelRow({ parcel, onChange, onRemove, removable }) {
             </div>
             <div className="grid grid-cols-2 gap-3 items-center">
                 <input className="input" type="number" step="0.01" min="0" placeholder="Declared value ($)" value={parcel.declaredValue} onChange={set("declaredValue")} required />
-                <label className="flex items-center gap-2 text-sm text-slate-600">
-                    <input type="checkbox" checked={parcel.insured} onChange={set("insured")} />
+                <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--ink-soft)' }}>
+                    <input type="checkbox" checked={parcel.insured} onChange={set("insured")} style={{ accentColor: 'var(--accent)' }} />
                     Insure this parcel
                 </label>
             </div>
@@ -198,96 +200,76 @@ export default function CreateDelivery() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto py-8 px-4">
-            <Link
-                to="/dashboard"
-                className="inline-block text-sm font-medium text-slate-500 hover:text-slate-800 mb-4"
-            >
-                &larr; Back to dashboard
-            </Link>
+        <div className="flex-1 flex flex-col">
+            <PageHeader backTo="/dashboard" />
+            <div className="page-shell">
+                <h1 className="text-3xl mb-1">Create a delivery</h1>
+                <p className="mb-6" style={{ color: 'var(--ink-soft)' }}>
+                    Enter the pickup and dropoff details, then add each parcel you're sending.
+                </p>
 
-            <h1 className="text-2xl font-bold text-slate-900 mb-1">Create a delivery</h1>
-            <p className="text-slate-500 mb-6">
-                Enter the pickup and dropoff details, then add each parcel you're sending.
-            </p>
-
-            <form onSubmit={handleSubmit} className="space-y-8">
-                <fieldset className="space-y-3">
-                    <legend className="text-sm font-semibold text-slate-700">Recipient</legend>
-                    <input
-                        className="input"
-                        type="email"
-                        placeholder="Recipient email"
-                        value={recipientEmail}
-                        onChange={(e) => setRecipientEmail(e.target.value)}
-                        required
-                    />
-                    <div className="grid grid-cols-2 gap-3">
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    <fieldset className="space-y-3">
+                        <legend className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Recipient</legend>
                         <input
                             className="input"
-                            placeholder="Your phone number"
-                            value={senderPhoneNumber}
-                            onChange={(e) => setSenderPhoneNumber(e.target.value)}
+                            type="email"
+                            placeholder="Recipient email"
+                            value={recipientEmail}
+                            onChange={(e) => setRecipientEmail(e.target.value)}
                             required
                         />
-                        <input
-                            className="input"
-                            placeholder="Recipient phone number"
-                            value={recipientPhoneNumber}
-                            onChange={(e) => setRecipientPhoneNumber(e.target.value)}
-                            required
-                        />
+                        <div className="grid grid-cols-2 gap-3">
+                            <input
+                                className="input"
+                                placeholder="Your phone number"
+                                value={senderPhoneNumber}
+                                onChange={(e) => setSenderPhoneNumber(e.target.value)}
+                                required
+                            />
+                            <input
+                                className="input"
+                                placeholder="Recipient phone number"
+                                value={recipientPhoneNumber}
+                                onChange={(e) => setRecipientPhoneNumber(e.target.value)}
+                                required
+                            />
+                        </div>
+                    </fieldset>
+
+                    <AddressFields label="Pickup address" value={pickUpAddress} onChange={setPickUpAddress} />
+                    <AddressFields label="Dropoff address" value={dropOffAddress} onChange={setDropOffAddress} />
+
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <legend className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>Parcels</legend>
+                            <button
+                                type="button"
+                                onClick={addParcel}
+                                className="text-sm font-medium"
+                                style={{ color: 'var(--accent)' }}
+                            >
+                                + Add another parcel
+                            </button>
+                        </div>
+                        {parcels.map((parcel) => (
+                            <ParcelRow
+                                key={parcel.key}
+                                parcel={parcel}
+                                onChange={(updated) => updateParcel(parcel.key, updated)}
+                                onRemove={() => removeParcel(parcel.key)}
+                                removable={parcels.length > 1}
+                            />
+                        ))}
                     </div>
-                </fieldset>
 
-                <AddressFields label="Pickup address" value={pickUpAddress} onChange={setPickUpAddress} />
-                <AddressFields label="Dropoff address" value={dropOffAddress} onChange={setDropOffAddress} />
+                    {error && <div className="banner banner-error">{error}</div>}
 
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <legend className="text-sm font-semibold text-slate-700">Parcels</legend>
-                        <button
-                            type="button"
-                            onClick={addParcel}
-                            className="text-sm font-medium text-blue-600 hover:text-blue-700"
-                        >
-                            + Add another parcel
-                        </button>
-                    </div>
-                    {parcels.map((parcel) => (
-                        <ParcelRow
-                            key={parcel.key}
-                            parcel={parcel}
-                            onChange={(updated) => updateParcel(parcel.key, updated)}
-                            onRemove={() => removeParcel(parcel.key)}
-                            removable={parcels.length > 1}
-                        />
-                    ))}
-                </div>
-
-                {error && (
-                    <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-                        {error}
-                    </div>
-                )}
-
-                <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full bg-slate-900 text-white rounded-lg py-2.5 font-medium hover:bg-slate-800 disabled:opacity-50"
-                >
-                    {submitting ? "Creating delivery..." : "Create delivery"}
-                </button>
-            </form>
+                    <button type="submit" disabled={submitting} className="btn btn-primary w-full">
+                        {submitting ? "Creating delivery..." : "Create delivery"}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
-
-/*
-Tailwind utility class used throughout via @apply, add to your CSS if not already present:
-
-.input {
-  @apply w-full rounded-md border border-slate-300 px-3 py-2 text-sm
-         focus:outline-none focus:ring-2 focus:ring-slate-400;
-}
-*/

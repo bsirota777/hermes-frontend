@@ -1,32 +1,32 @@
 import { useState, useEffect } from 'react';
 import { userApiClient, deliveryApiClient } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
+import { PageHeader } from '../components/Brand';
+import StatusBadge from '../components/StatusBadge';
 
 export default function AdminDashboard() {
     const [tab, setTab] = useState('users');
 
     return (
-        <div className="min-h-screen bg-slate-100 p-8">
-            <h1 className="text-2xl font-bold text-slate-800 mb-6">Admin Dashboard</h1>
+        <div className="flex-1 flex flex-col">
+            <PageHeader />
+            <div className="page-shell-wide">
+                <h1 className="text-3xl mb-6">Admin dashboard</h1>
 
-            <div className="flex gap-2 mb-6">
-                <TabButton active={tab === 'users'} onClick={() => setTab('users')}>Users</TabButton>
-                <TabButton active={tab === 'deliveries'} onClick={() => setTab('deliveries')}>Deliveries</TabButton>
+                <div className="flex gap-2 mb-6">
+                    <TabButton active={tab === 'users'} onClick={() => setTab('users')}>Users</TabButton>
+                    <TabButton active={tab === 'deliveries'} onClick={() => setTab('deliveries')}>Deliveries</TabButton>
+                </div>
+
+                {tab === 'users' ? <UsersTab /> : <DeliveriesTab />}
             </div>
-
-            {tab === 'users' ? <UsersTab /> : <DeliveriesTab />}
         </div>
     );
 }
 
 function TabButton({ active, onClick, children }) {
     return (
-        <button
-            onClick={onClick}
-            className={`px-4 py-2 rounded-md font-medium ${
-                active ? 'bg-blue-600 text-white' : 'bg-white text-slate-700 border border-slate-300'
-            }`}
-        >
+        <button onClick={onClick} className={`btn ${active ? 'btn-primary' : 'btn-secondary'}`}>
             {children}
         </button>
     );
@@ -60,27 +60,27 @@ function UsersTab() {
         refetch();
     }
 
-    if (loading) return <p className="text-slate-500">Loading...</p>;
+    if (loading) return <p style={{ color: 'var(--ink-soft)' }}>Loading...</p>;
     if (data.content.length === 0) {
-        return <div className="bg-white rounded-lg shadow-md p-8 text-center text-slate-500">No users yet.</div>;
+        return <div className="card p-8 text-center" style={{ color: 'var(--ink-soft)' }}>No users yet.</div>;
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="card overflow-hidden">
             <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead style={{ background: 'var(--surface-sunken)', color: 'var(--ink-soft)' }}>
                 <tr>
-                    <th className="px-4 py-3">Name</th>
-                    <th className="px-4 py-3">Email</th>
-                    <th className="px-4 py-3">Role</th>
-                    <th className="px-4 py-3">Sends</th>
-                    <th className="px-4 py-3">Receives</th>
-                    <th className="px-4 py-3">Banned</th>
+                    <th className="px-4 py-3 font-medium">Name</th>
+                    <th className="px-4 py-3 font-medium">Email</th>
+                    <th className="px-4 py-3 font-medium">Role</th>
+                    <th className="px-4 py-3 font-medium">Sends</th>
+                    <th className="px-4 py-3 font-medium">Receives</th>
+                    <th className="px-4 py-3 font-medium">Banned</th>
                 </tr>
                 </thead>
                 <tbody>
                 {data.content.map((u) => (
-                    <tr key={u.id} className="border-t border-slate-100">
+                    <tr key={u.id} style={{ borderTop: '1px solid var(--border)' }}>
                         <td className="px-4 py-3">{u.name}</td>
                         <td className="px-4 py-3">{u.email}</td>
                         <td className="px-4 py-3">{u.role}</td>
@@ -88,13 +88,14 @@ function UsersTab() {
                         <td className="px-4 py-3">{u.receivedCount}</td>
                         <td className="px-4 py-3">
                             {u.email === currentUserEmail ? (
-                                <span className="text-slate-400 text-xs italic">You</span>
+                                <span className="text-xs italic" style={{ color: 'var(--ink-faint)' }}>You</span>
                             ) : (
                                 <input
                                     type="checkbox"
                                     checked={u.banned}
                                     onChange={() => toggleBanned(u)}
-                                    className="w-4 h-4 accent-red-600"
+                                    className="w-4 h-4"
+                                    style={{ accentColor: 'var(--danger)' }}
                                 />
                             )}
                         </td>
@@ -110,39 +111,35 @@ function UsersTab() {
 function DeliveriesTab() {
     const { data, page, setPage, loading } = usePagedData(deliveryApiClient, '/admin/deliveries');
 
-    if (loading) return <p className="text-slate-500">Loading...</p>;
+    if (loading) return <p style={{ color: 'var(--ink-soft)' }}>Loading...</p>;
 
     if (data.content.length === 0) {
-        return (
-            <div className="bg-white rounded-lg shadow-md p-8 text-center text-slate-500">
-                No deliveries yet.
-            </div>
-        );
+        return <div className="card p-8 text-center" style={{ color: 'var(--ink-soft)' }}>No deliveries yet.</div>;
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="card overflow-hidden">
             <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead style={{ background: 'var(--surface-sunken)', color: 'var(--ink-soft)' }}>
                 <tr>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Sender</th>
-                    <th className="px-4 py-3">Recipient</th>
-                    <th className="px-4 py-3">Driver</th>
-                    <th className="px-4 py-3">Fee</th>
-                    <th className="px-4 py-3">Parcels</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
+                    <th className="px-4 py-3 font-medium">Sender</th>
+                    <th className="px-4 py-3 font-medium">Recipient</th>
+                    <th className="px-4 py-3 font-medium">Driver</th>
+                    <th className="px-4 py-3 font-medium">Fee</th>
+                    <th className="px-4 py-3 font-medium">Parcels</th>
                 </tr>
                 </thead>
                 <tbody>
                 {data.content.map((d) => (
-                    <tr key={d.id} className="border-t border-slate-100">
-                        <td className="px-4 py-3">{d.status}</td>
+                    <tr key={d.id} style={{ borderTop: '1px solid var(--border)' }}>
+                        <td className="px-4 py-3"><StatusBadge status={d.status} /></td>
                         <td className="px-4 py-3">{d.senderName}</td>
                         <td className="px-4 py-3">{d.recipientName}</td>
                         <td className="px-4 py-3">
-                            {d.driverName ?? <span className="text-slate-400">Unassigned</span>}
+                            {d.driverName ?? <span style={{ color: 'var(--ink-faint)' }}>Unassigned</span>}
                             {d.driverName && d.driverVerified && (
-                                <span className="ml-1 text-green-600 text-xs">✓ Verified</span>
+                                <span className="ml-1 text-xs" style={{ color: 'var(--evergreen)' }}>✓ Verified</span>
                             )}
                         </td>
                         <td className="px-4 py-3">${d.deliveryFee}</td>
@@ -158,21 +155,26 @@ function DeliveriesTab() {
 
 function Pager({ page, setPage, totalPages }) {
     return (
-        <div className="flex justify-between items-center px-4 py-3 bg-slate-50 border-t border-slate-100">
+        <div
+            className="flex justify-between items-center px-4 py-3"
+            style={{ background: 'var(--surface-sunken)', borderTop: '1px solid var(--border)' }}
+        >
             <button
                 disabled={page === 0}
                 onClick={() => setPage((p) => p - 1)}
-                className="text-sm text-blue-600 disabled:text-slate-300"
+                className="text-sm font-medium"
+                style={{ color: page === 0 ? 'var(--ink-faint)' : 'var(--accent)' }}
             >
                 ← Previous
             </button>
-            <span className="text-sm text-slate-500">
-        Page {page + 1} of {totalPages}
-      </span>
+            <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+                Page {page + 1} of {totalPages}
+            </span>
             <button
                 disabled={page + 1 >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
-                className="text-sm text-blue-600 disabled:text-slate-300"
+                className="text-sm font-medium"
+                style={{ color: page + 1 >= totalPages ? 'var(--ink-faint)' : 'var(--accent)' }}
             >
                 Next →
             </button>

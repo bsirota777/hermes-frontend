@@ -4,11 +4,11 @@ import { getMyAccount } from '../api/account';
 import AddressForm from '../components/AddressForm';
 import PasswordForm from '../components/PasswordForm';
 import { Link } from 'react-router-dom';
+import { PageHeader } from '../components/Brand';
 
 const TABS = ['Profile', 'Address', 'Password'];
 
 export default function Dashboard() {
-    //console.log('Dashboard mounted');
     const [account, setAccount] = useState(null);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('Profile');
@@ -17,86 +17,90 @@ export default function Dashboard() {
         getMyAccount().then(setAccount).catch((e) => setError(e.message));
     }, []);
 
-    if (error) {
-        return <div className="p-6 text-red-600">Couldn't load your account: {error}</div>;
-    }
-
-    if (!account) {
-        return <div className="p-6 text-gray-500">Loading...</div>;
-    }
-
     return (
-        <div className="max-w-2xl mx-auto p-6">
-            <h1 className="text-2xl font-semibold mb-6">My account</h1>
+        <div className="flex-1 flex flex-col">
+            <PageHeader />
+            <div className="page-shell">
+                {error && <div className="banner banner-error">Couldn't load your account: {error}</div>}
 
-            <div className="flex border-b mb-6">
-                {TABS.map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
-                            activeTab === tab
-                                ? 'border-blue-600 text-blue-600'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-
-            {activeTab === 'Profile' && (
-                <div className="space-y-2 text-sm">
-                    <Row label="Name" value={account.name} />
-                    <Row label="Email" value={account.email} />
-                    <Row label="Role" value={account.role} />
-                </div>
-            )}
-
-            {activeTab === 'Address' && <AddressForm />}
-            {activeTab === 'Password' && <PasswordForm />}
-
-            <div className="mt-8 pt-6 border-t flex gap-3">
-                <Link
-                    to="/deliveries/new"
-                    className="inline-block text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800"
-                >
-                    Create a delivery
-                </Link>
-
-                {account.isDriver ? (
-                    <Link
-                        to="/driver-profile/edit"
-                        className="inline-block text-sm font-medium border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50"
-                    >
-                        Change driver details
-                    </Link>
-                ) : (
-                    <Link
-                        to="/driver-registration"
-                        className="inline-block text-sm font-medium border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50"
-                    >
-                        Register as a driver
-                    </Link>
+                {!error && !account && (
+                    <p style={{ color: 'var(--ink-soft)' }}>Loading...</p>
                 )}
 
-                {account.isDriver && (
-                    <Link
-                        to="/deliveries/queue"
-                        className="inline-block text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800"
-                    >
-                        Delivery queue
-                    </Link>
+                {account && (
+                    <>
+                        <h1 className="text-3xl mb-6">My account</h1>
+
+                        <div className="flex gap-1 mb-6" style={{ borderBottom: '1.5px solid var(--border)' }}>
+                            {TABS.map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className="px-4 py-2 text-sm font-medium -mb-px"
+                                    style={{
+                                        borderBottom: `2px solid ${activeTab === tab ? 'var(--accent)' : 'transparent'}`,
+                                        color: activeTab === tab ? 'var(--accent)' : 'var(--ink-soft)',
+                                    }}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
+
+                        {activeTab === 'Profile' && (
+                            <div className="card p-5 space-y-1">
+                                <Row label="Name" value={account.name} />
+                                <Row label="Email" value={account.email} />
+                                <Row label="Role" value={account.role} last />
+                            </div>
+                        )}
+
+                        {activeTab === 'Address' && (
+                            <div className="card p-5">
+                                <AddressForm />
+                            </div>
+                        )}
+                        {activeTab === 'Password' && (
+                            <div className="card p-5">
+                                <PasswordForm />
+                            </div>
+                        )}
+
+                        <div className="mt-8 pt-6 flex flex-wrap gap-3" style={{ borderTop: '1.5px solid var(--border)' }}>
+                            <Link to="/deliveries/new" className="btn btn-primary">
+                                Create a delivery
+                            </Link>
+
+                            {account.isDriver ? (
+                                <Link to="/driver-profile/edit" className="btn btn-secondary">
+                                    Change driver details
+                                </Link>
+                            ) : (
+                                <Link to="/driver-registration" className="btn btn-secondary">
+                                    Register as a driver
+                                </Link>
+                            )}
+
+                            {account.isDriver && (
+                                <Link to="/deliveries/queue" className="btn btn-primary">
+                                    Delivery queue
+                                </Link>
+                            )}
+                        </div>
+                    </>
                 )}
             </div>
         </div>
     );
 }
 
-function Row({ label, value }) {
+function Row({ label, value, last }) {
     return (
-        <div className="flex justify-between border-b py-2">
-            <span className="text-gray-500">{label}</span>
+        <div
+            className="flex justify-between py-2.5 text-sm"
+            style={last ? {} : { borderBottom: '1px solid var(--border)' }}
+        >
+            <span style={{ color: 'var(--ink-soft)' }}>{label}</span>
             <span className="font-medium">{value}</span>
         </div>
     );

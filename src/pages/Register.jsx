@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { BrandLockup } from '../components/Brand';
 
 export default function Register() {
     const [name, setName] = useState('');
@@ -32,63 +33,64 @@ export default function Register() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-100">
-            <div className="w-full max-w-sm bg-white p-8 rounded-lg shadow-md">
-                <h1 className="text-2xl font-bold text-slate-800 mb-6">Create your Hermes account</h1>
+        <div className="flex-1 flex items-center justify-center px-4 py-10">
+            <div className="w-full max-w-sm">
+                <div className="mb-6 flex justify-center">
+                    <BrandLockup to="/login" />
+                </div>
 
-                {error && (
-                    <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
-                        {error}
-                    </div>
-                )}
+                <div className="card p-8">
+                    <h1 className="text-2xl mb-1">Join Hermes</h1>
+                    <p className="text-sm mb-6" style={{ color: 'var(--ink-soft)' }}>
+                        Create an account to send parcels or start driving.
+                    </p>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                        <input
-                            type="text"
-                            required
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
+                    {error && <div className="banner banner-error mb-4">{error}</div>}
 
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                        <input
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="field-label">Name</label>
+                            <input
+                                type="text"
+                                required
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="input"
+                            />
+                        </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                        <input
-                            type="password"
-                            required
-                            minLength={8}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
+                        <div>
+                            <label className="field-label">Email</label>
+                            <input
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="input"
+                            />
+                        </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-blue-600 text-white py-2 rounded-md font-medium hover:bg-blue-700 disabled:opacity-50"
-                    >
-                        {loading ? 'Creating account...' : 'Register'}
-                    </button>
-                </form>
+                        <div>
+                            <label className="field-label">Password</label>
+                            <input
+                                type="password"
+                                required
+                                minLength={8}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="input"
+                            />
+                        </div>
 
-                <p className="mt-4 text-sm text-slate-600 text-center">
+                        <button type="submit" disabled={loading} className="btn btn-primary w-full">
+                            {loading ? 'Creating account...' : 'Register'}
+                        </button>
+                    </form>
+                </div>
+
+                <p className="mt-5 text-sm text-center" style={{ color: 'var(--ink-soft)' }}>
                     Already have an account?{' '}
-                    <Link to="/login" className="text-blue-600 hover:underline">
+                    <Link to="/login" style={{ color: 'var(--accent)' }} className="font-medium hover:underline">
                         Log in
                     </Link>
                 </p>

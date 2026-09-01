@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { PageHeader } from "./Brand";
+import StatusBadge from "./StatusBadge";
 
 const API_BASE_URL = import.meta.env.VITE_DELIVERY_SERVICE_URL || "http://localhost:8084";
 const PAGE_SIZE = 20;
@@ -65,84 +66,77 @@ export default function DeliveryQueue() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto py-8 px-4">
-            <Link
-                to="/dashboard"
-                className="inline-block text-sm font-medium text-slate-500 hover:text-slate-800 mb-4"
-            >
-                &larr; Back to dashboard
-            </Link>
+        <div className="flex-1 flex flex-col">
+            <PageHeader backTo="/dashboard" />
+            <div className="page-shell">
+                <h1 className="text-3xl mb-1">Delivery queue</h1>
+                <p className="mb-6" style={{ color: 'var(--ink-soft)' }}>
+                    Unassigned deliveries near you, closest first. Reserve one to start driving it.
+                </p>
 
-            <h1 className="text-2xl font-bold text-slate-900 mb-1">Delivery queue</h1>
-            <p className="text-slate-500 mb-6">
-                Unassigned deliveries near you, closest first. Reserve one to start driving it.
-            </p>
+                {error && <div className="banner banner-error mb-4">{error}</div>}
 
-            {error && (
-                <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 mb-4">
-                    {error}
-                </div>
-            )}
+                {loading && <div style={{ color: 'var(--ink-soft)' }}>Loading queue...</div>}
 
-            {loading && <div className="text-slate-500">Loading queue...</div>}
+                {!loading && data && data.content.length === 0 && (
+                    <div
+                        className="rounded-lg px-4 py-8 text-center"
+                        style={{ border: '1.5px dashed var(--border-strong)', color: 'var(--ink-soft)' }}
+                    >
+                        No unassigned deliveries right now. Check back soon.
+                    </div>
+                )}
 
-            {!loading && data && data.content.length === 0 && (
-                <div className="rounded-lg border border-dashed border-slate-300 px-4 py-8 text-center text-slate-500">
-                    No unassigned deliveries right now. Check back soon.
-                </div>
-            )}
-
-            {!loading && data && data.content.length > 0 && (
-                <div className="space-y-3">
-                    {data.content.map((delivery) => (
-                        <div
-                            key={delivery.id}
-                            className="rounded-lg border border-slate-200 p-4 flex items-center justify-between"
-                        >
-                            <div>
-                                <div className="font-medium text-slate-900">
-                                    Delivery #{delivery.id}
+                {!loading && data && data.content.length > 0 && (
+                    <div className="space-y-3">
+                        {data.content.map((delivery) => (
+                            <div key={delivery.id} className="card p-4 flex items-center justify-between">
+                                <div>
+                                    <div className="font-medium">Delivery #{delivery.id}</div>
+                                    <div className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+                                        From {delivery.senderName} to {delivery.recipientName}
+                                    </div>
+                                    <div className="text-xs mt-1.5 flex items-center gap-2" style={{ color: 'var(--ink-faint)' }}>
+                                        <span>Created {formatDate(delivery.createdAt)}</span>
+                                        <StatusBadge status={delivery.status} />
+                                    </div>
                                 </div>
-                                <div className="text-sm text-slate-500">
-                                    From {delivery.senderName} to {delivery.recipientName}
-                                </div>
-                                <div className="text-xs text-slate-400 mt-1">
-                                    Created {formatDate(delivery.createdAt)} &middot; {delivery.status}
-                                </div>
+                                <button
+                                    onClick={() => handleReserve(delivery.id)}
+                                    disabled={reservingId === delivery.id}
+                                    className="btn btn-primary shrink-0"
+                                >
+                                    {reservingId === delivery.id ? "Reserving..." : "Reserve"}
+                                </button>
                             </div>
-                            <button
-                                onClick={() => handleReserve(delivery.id)}
-                                disabled={reservingId === delivery.id}
-                                className="text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 disabled:opacity-50 shrink-0"
-                            >
-                                {reservingId === delivery.id ? "Reserving..." : "Reserve"}
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
 
-            {data && data.totalPages > 1 && (
-                <div className="flex items-center justify-between mt-6">
-                    <button
-                        onClick={() => setPage((p) => Math.max(0, p - 1))}
-                        disabled={data.first}
-                        className="text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-40"
-                    >
-                        &larr; Previous
-                    </button>
-                    <span className="text-sm text-slate-500">
-            Page {data.number + 1} of {data.totalPages}
-          </span>
-                    <button
-                        onClick={() => setPage((p) => p + 1)}
-                        disabled={data.last}
-                        className="text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-40"
-                    >
-                        Next &rarr;
-                    </button>
-                </div>
-            )}
+                {data && data.totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6">
+                        <button
+                            onClick={() => setPage((p) => Math.max(0, p - 1))}
+                            disabled={data.first}
+                            className="text-sm font-medium"
+                            style={{ color: data.first ? 'var(--ink-faint)' : 'var(--accent)' }}
+                        >
+                            &larr; Previous
+                        </button>
+                        <span className="text-sm" style={{ color: 'var(--ink-soft)' }}>
+                            Page {data.number + 1} of {data.totalPages}
+                        </span>
+                        <button
+                            onClick={() => setPage((p) => p + 1)}
+                            disabled={data.last}
+                            className="text-sm font-medium"
+                            style={{ color: data.last ? 'var(--ink-faint)' : 'var(--accent)' }}
+                        >
+                            Next &rarr;
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

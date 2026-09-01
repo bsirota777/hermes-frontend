@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { PageHeader } from "./Brand";
 
 const API_BASE_URL = import.meta.env.VITE_USER_SERVICE_URL || "http://localhost:8081";
 
@@ -55,102 +56,90 @@ export default function DriverRegistration() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto py-8 px-4">
-            <Link
-                to="/dashboard"
-                className="inline-block text-sm font-medium text-slate-500 hover:text-slate-800 mb-4"
-            >
-                &larr; Back to dashboard
-            </Link>
+        <div className="flex-1 flex flex-col">
+            <PageHeader backTo="/dashboard" />
+            <div className="page-shell">
+                <h1 className="text-3xl mb-1">Register as a driver</h1>
+                <p className="mb-6" style={{ color: 'var(--ink-soft)' }}>
+                    Add your licence and vehicle details to start accepting deliveries.
+                </p>
 
-            <h1 className="text-2xl font-bold text-slate-900 mb-1">Register as a driver</h1>
-            <p className="text-slate-500 mb-6">
-                Add your licence and vehicle details to start accepting deliveries.
-            </p>
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    <fieldset className="space-y-3">
+                        <legend className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Address</legend>
+                        <div className="grid grid-cols-2 gap-3">
+                            <input
+                                className="input"
+                                placeholder="Street number"
+                                value={address.streetNumber}
+                                onChange={setAddressField("streetNumber")}
+                                required
+                            />
+                            <input
+                                className="input"
+                                placeholder="Street name"
+                                value={address.streetName}
+                                onChange={setAddressField("streetName")}
+                                required
+                            />
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                            <input
+                                className="input"
+                                placeholder="Suburb"
+                                value={address.suburb}
+                                onChange={setAddressField("suburb")}
+                                required
+                            />
+                            <input
+                                className="input"
+                                placeholder="State"
+                                value={address.state}
+                                onChange={setAddressField("state")}
+                                required
+                            />
+                            <input
+                                className="input"
+                                placeholder="Postcode"
+                                value={address.postcode}
+                                onChange={setAddressField("postcode")}
+                                required
+                            />
+                        </div>
+                    </fieldset>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
-                <fieldset className="space-y-3">
-                    <legend className="text-sm font-semibold text-slate-700">Address</legend>
-                    <div className="grid grid-cols-2 gap-3">
+                    <fieldset className="space-y-3">
+                        <legend className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Contact &amp; licence</legend>
                         <input
                             className="input"
-                            placeholder="Street number"
-                            value={address.streetNumber}
-                            onChange={setAddressField("streetNumber")}
+                            placeholder="Phone number"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
                             required
                         />
                         <input
                             className="input"
-                            placeholder="Street name"
-                            value={address.streetName}
-                            onChange={setAddressField("streetName")}
-                            required
-                        />
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                        <input
-                            className="input"
-                            placeholder="Suburb"
-                            value={address.suburb}
-                            onChange={setAddressField("suburb")}
+                            placeholder="Licence number"
+                            value={licenceNumber}
+                            onChange={(e) => setLicenceNumber(e.target.value)}
                             required
                         />
                         <input
                             className="input"
-                            placeholder="State"
-                            value={address.state}
-                            onChange={setAddressField("state")}
+                            placeholder="Vehicle plate"
+                            value={vehiclePlate}
+                            onChange={(e) => setVehiclePlate(e.target.value)}
                             required
                         />
-                        <input
-                            className="input"
-                            placeholder="Postcode"
-                            value={address.postcode}
-                            onChange={setAddressField("postcode")}
-                            required
-                        />
-                    </div>
-                </fieldset>
+                    </fieldset>
 
-                <fieldset className="space-y-3">
-                    <legend className="text-sm font-semibold text-slate-700">Contact & licence</legend>
-                    <input
-                        className="input"
-                        placeholder="Phone number"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        required
-                    />
-                    <input
-                        className="input"
-                        placeholder="Licence number"
-                        value={licenceNumber}
-                        onChange={(e) => setLicenceNumber(e.target.value)}
-                        required
-                    />
-                    <input
-                        className="input"
-                        placeholder="Vehicle plate"
-                        value={vehiclePlate}
-                        onChange={(e) => setVehiclePlate(e.target.value)}
-                        required
-                    />
-                </fieldset>
+                    {error && <div className="banner banner-error">{error}</div>}
 
-                {error && (
-                    <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-                        {error}
-                    </div>
-                )}
-
-                <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full bg-slate-900 text-white rounded-lg py-2.5 font-medium hover:bg-slate-800 disabled:opacity-50"
-                >
-                    {submitting ? "Registering..." : "Register as a driver"}
-                </button>
-            </form>
+                    <button type="submit" disabled={submitting} className="btn btn-primary w-full">
+                        {submitting ? "Registering..." : "Register as a driver"}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
